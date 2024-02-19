@@ -1,0 +1,32 @@
+#!/bin/bash
+
+directory="./recordings"
+
+external=`ls /media/pi`
+if [ -d "/media/pi/$external" ] && [ -w "/media/pi/$external" ]; then
+    directory="/media/pi/$external"
+    echo "Found external storage: $directory"
+fi
+
+filename="test"
+
+while getopts ":d:f:h" opt; do
+    case $opt in
+	d )
+	    directory=$OPTARG
+	    ;;
+	f )
+	    filename=$OPTARG
+	    ;;
+	h )
+	    echo "$0 -d <directory> -f <filename>"
+	    echo "Records to <directory>/<filename.wav>"
+	    echo "If no <directory> is given, default is: ./recordings"
+	    echo "If no <filename> is given, default is: test"
+	    echo "Recording can be paused/resumed by pressing space or enter"
+	    ;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+python3 python/piRecorder.py $directory $filename
